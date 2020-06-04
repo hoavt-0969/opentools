@@ -17,7 +17,8 @@ def get_form_details(form):
     method = form.attrs.get("method", "get").lower()
 
     inputs = []
-    all_form = form.find_all("input")
+    all_form = form.find_all(["input", "textarea"])
+
     # all_form.append(form.find_all("input"))
     # print(all_form)
     for input_tag in all_form:
@@ -62,11 +63,11 @@ def scan_xss(url):
     for form in forms:
         # print(form)
         form_details = get_form_details(form)
-        # print(form_details)
+        print(form_details)
         content = submit_form(form_details, url, js_script).content.decode()
-        f = open("output.txt",'w')
-        f.write(content+"\n")
-        f.close()
+        # f = open("output.txt",'w')
+        # f.write(content+"\n")
+        # f.close()
         if js_script in content:
             print(f"[+] XSS Detected on {url}")
             print(f"[*] Form details:")
@@ -75,5 +76,5 @@ def scan_xss(url):
     return is_vulnerable
 
 if __name__ == "__main__":
-    url = "http://testphp.vulnweb.com/userinfo.php"
+    url = "http://testphp.vulnweb.com/guestbook.php"
     print(scan_xss(url))

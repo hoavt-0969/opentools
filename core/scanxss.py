@@ -4,24 +4,23 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin
 import threading
 from queue import Queue
-
+import config
 par = Queue()
 
+payloads = config.payloads
 def reflect_xss(url,params_fuzz):
-    cookies = {"PHPSESSID":"luh33oe22dta5pb4o53pfl4sdp", "security":"low"}
-    payload = "<script>alert(\"tested\");</script>"
     global par
     while not par.empty():
         param = par.get()
         # print(param)
-        data = {param:payload}
-        res = requests.get(url=url, params=data,cookies=cookies)
-        if payload in res.content.decode():
+        data = {param:payloads}
+        res = requests.get(url=url, params=data,cookies=config.cookies)
+        if payloads in res.content.decode():
             print(f"[+] XSS Detected on {url}")
             print(f"[*] Inputs details:")
             details = {
                 "method":"get",
-                "intpus":[{"param":param, "payload":payload}]
+                "intpus":[{"param":param, "payload":payloads}]
             }
             pprint(details)
         par.task_done()
@@ -34,8 +33,7 @@ def scan_reflect(url,params_fuzz,number_threads):
         t.daemon = True
         t.start()
 def get_all_forms(url):
-    cookies = {"PHPSESSID":"luh33oe22dta5pb4o53pfl4sdp", "security":"low"}
-    soup = bs(requests.get(url,cookies=cookies).content,"html.parser")
+    soup = bs(requests.get(url,cookies=config.cookies).content,"html.parser")
     return soup.find_all("form")
 
 def get_form_details(form):
@@ -74,13 +72,12 @@ def submit_form(form_details, url, value):
         if input_name and input_value:
             data[input_name] = input_value
     
-    cookies = {"PHPSESSID":"luh33oe22dta5pb4o53pfl4sdp", "security":"low"}
     # print(data)
     if form_details["method"] == "post":
         #print(requests.post(target_url, data=data, cookies=cookies).content.decode())
-        return requests.post(target_url, data=data, cookies=cookies)
+        return requests.post(target_url, data=data, cookies=config.cookies)
     else:
-        return requests.get(target_url, params=data, cookies=cookies)
+        return requests.get(target_url, params=data, cookies=config.cookies)
 
 
 def scan_xss(url):
@@ -105,18 +102,7 @@ def scan_xss(url):
     return is_vulnerable
 
 if __name__ == "__main__":
-    url = "https://abunabi-asado.tk/vulnerabilities/xss_r/"
-    # print(scan_xss(url))
-    # detect = reflect_xss(url)
-    # pprint(detect)
-    params_fuzz = [
-    'name','query','redirect', 'redir', 'url', 'link', 'goto', 'debug', '_debug', 'test', 'get', 'index', 'src', 'source', 'file',
-    'frame', 'config', 'new', 'old', 'var', 'rurl', 'return_to', '_return', 'returl', 'last', 'text', 'load', 'email',
-    'mail', 'user', 'username', 'password', 'pass', 'passwd', 'first_name', 'last_name', 'back', 'href', 'ref', 'data', 'input',
-    'out', 'net', 'host', 'address', 'code', 'auth', 'userid', 'auth_token', 'token', 'error', 'keyword', 'key', 'q', 'aid',
-    'bid', 'cid', 'did', 'eid', 'fid', 'gid', 'hid', 'iid', 'jid', 'kid', 'lid', 'mid', 'nid', 'oid', 'pid', 'qid', 'rid', 'sid',
-    'tid', 'uid', 'vid', 'wid', 'xid', 'yid', 'zid', 'cal', 'country', 'x', 'y', 'topic', 'title', 'head', 'higher', 'lower', 'width',
-    'height', 'add', 'result', 'log', 'demo', 'example', 'message']
-    number_threads = int(input("number threads: "))
-    scan_reflect(url,params_fuzz,number_threads)
+    config.url = "https://abunabi-asado.tk/vulnerabilities/xss_r/"
+    number_threads = 100
+    scan_reflect(config.url,config.params_fuzz,number_threads)
     par.join()

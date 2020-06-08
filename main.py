@@ -1,15 +1,18 @@
 import argparse
+# from core import scanxss,dirb
+def banner():
+    print('''
+ ____               ____ ____  ____  
+/ ___| _   _ _ __  / ___/ ___||  _ \ 
+\___ \| | | | '_ \| |   \___ \| |_) |
+ ___) | |_| | | | | |___ ___) |  _ < 
+|____/ \__,_|_| |_|\____|____/|_| \_\ 
 
+''')
 def main():
-    parse = argparse.ArgumentParser(prog="scan")
-    parse.add_argument("-u","--url",required=True,help="Target url")
-    parse.add_argument("-t","--threads",required=True,help="Number threads")
-    dirb = parse.add_argument_group("dirb")
-    xss = parse.add_argument_group("xss")
-    dns = parse.add_argument_group("dns")
-    dirb.add_argument("-e","--extensions",required=True)
-    # xss.add_argument("")
-    # dns = parse.add_argument("")
-    parse.print_help()
+    parser = argparse.ArgumentParser(prog="scan")
+    parser.add_argument("-u","--url",required=True)
+    args = parser.parse_args()
+    print(vars(args))
 if __name__ == "__main__":
     main()

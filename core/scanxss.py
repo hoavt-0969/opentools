@@ -4,10 +4,13 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin
 import threading
 from queue import Queue
-import config
+from core import config
 par = Queue()
 
+url = config.url
+params_fuzz = config.params_fuzz
 payloads = config.payloads
+number_threads = config.number_threads
 def reflect_xss(url,params_fuzz):
     global par
     while not par.empty():
@@ -101,8 +104,7 @@ def scan_xss(url):
             is_vulnerable = True
     return is_vulnerable
 
-if __name__ == "__main__":
-    config.url = "https://abunabi-asado.tk/vulnerabilities/xss_r/"
-    number_threads = 100
-    scan_reflect(config.url,config.params_fuzz,number_threads)
+
+def main():
+    scan_reflect(url,params_fuzz,number_threads)
     par.join()

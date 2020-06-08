@@ -52,7 +52,8 @@ word_queue = build_wordlist(wordlist_file)
 # while not word_queue.empty():
 #     print(word_queue.get())
 
-extensions = [".php",".html",".txt"]
-for i in range(100):
-    t = threading.Thread(target=dirb,args=(word_queue,extensions,))
-    t.start()
+def main():
+    extensions = [".php",".html",".txt"]
+    for i in range(100):
+        t = threading.Thread(target=dirb,args=(word_queue,extensions,))
+        t.start()

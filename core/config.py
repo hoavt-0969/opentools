@@ -1,3 +1,6 @@
+
+
+
 params_fuzz = [
     'name','query','redirect', 'redir', 'url', 'link', 'goto', 'debug', '_debug', 'test', 'get', 'index', 'src', 'source', 'file',
     'frame', 'config', 'new', 'old', 'var', 'rurl', 'return_to', '_return', 'returl', 'last', 'text', 'load', 'email',
@@ -12,5 +15,6 @@ cookies = {"PHPSESSID":"9ej49jdjq07nur1tuj5akfh67r", "security":"low"}
 
 payloads = "<script>alert(\"tested\");</script>"
 
+url = "https://abunabi-asado.tk/vulnerabilities/xss_r/"
 
-url = 
+number_threads = 100

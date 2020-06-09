@@ -1,6 +1,8 @@
 import argparse
 
 def parse_cookie(rawdata):
+    if rawdata == None:
+        return rawdata
     from http.cookies import SimpleCookie
     cookie = SimpleCookie()
     cookie.load(rawdata)
@@ -20,11 +22,19 @@ def banner():
 
 def options():
     parser = argparse.ArgumentParser(prog="scan")
-    parser.add_argument("-u","--url",required=True)
+    subparsers = parser.add_subparsers(dest='command')
+
+    dirb_parser = subparsers.add_parser("dirb")
+    xss_parser = subparsers.add_parser("xss")
+    dns_parser = subparsers.add_parser("dns")
+
+    dirb_parser.add_argument('-u','--url',required=True,type=str)
+    dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
+    dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
+
+    xss_parser.add_argument('-u','--url',required=True,type=str)
     parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads")
     parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
-    parser.add_argument('-w','--wordlist',type=str,required=False,default="/home/sun/opentools/subdomains.txt")
-    parser.add_argument("-e","--extensions",type=str,required=False,default=".php,.html,.txt")
     return parser.parse_args()
 
 args = options()

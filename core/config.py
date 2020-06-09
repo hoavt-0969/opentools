@@ -1,5 +1,5 @@
 import argparse
-
+from core import parsedata
 def parse_cookie(rawdata):
     if rawdata == None:
         return rawdata
@@ -28,22 +28,44 @@ def options():
     xss_parser = subparsers.add_parser("xss")
     dns_parser = subparsers.add_parser("dns")
 
-    dirb_parser.add_argument('-u','--url',required=True,type=str)
+    dirb_parser.add_argument('-u','--url',required=True,type=str,default=None)
     dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
     dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
-
+    dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads")
     xss_parser.add_argument('-u','--url',required=True,type=str)
-    parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads")
+    
     parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
     return parser.parse_args()
 
 
 args = options()
-url = args.url
 number_threads = args.threads
-cookies = parse_cookie(args.cookies)
-extensions = args.extensions.split(",")
-print(vars(args))
+# print(vars(args))
+# print(args.command)
+if args.command == "dirb":
+    if args.url[-1] == "/":
+        url = args.url[:-1]
+    else:
+        url = url
+    # print(url[-1])
+    # print(url)
+    cookies = parsedata.parse_cookie(args.cookies)
+    wordlist = args.wordlist
+    extensions = args.extensions.split(",")
+    from core import dirb
+    dirb.main()
+    # print(vars(url))
+    # print(vars(cookies))
+    # print(vars(wordlist))
+elif args.command == "xss":
+    pass
+elif args.command == "dns":
+    pass
+
+# url = args.url
+#cookies = parse_cookie(args.cookies)
+
+# print(vars(args))
 # print(extensions)
 params_fuzz = [
     'name','query','redirect', 'redir', 'url', 'link', 'goto', 'debug', '_debug', 'test', 'get', 'index', 'src', 'source', 'file',

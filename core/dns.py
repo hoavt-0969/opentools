@@ -7,13 +7,13 @@ from queue import Queue
 
 d = Queue()
 
-def parse_url(url):
-    try:
-        host = urllib3.util.url.parse_url(url).host
-    except Exception as e:
-        print("Invalid domain, try again..")
-        sys.exit(1)
-    return host
+# def parse_url(url):
+#     try:
+#         host = urllib3.util.url.parse_url(url).host
+#     except Exception as e:
+#         print("Invalid domain, try again..")
+#         sys.exit(1)
+#     return host
 
 def parse_wordlist(wordlist):
     try:

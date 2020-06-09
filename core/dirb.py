@@ -12,11 +12,19 @@ url = config.url
 # wordlist_file ="../subdomains.txt"
 
 number_threads = config.number_threads
-wordlist_file = config.wordlist_file
+wordlist_file = config.wordlist
 extensions = config.extensions
+raw_words = []
 def build_wordlist(wordlist_file):
+
     f = open(wordlist_file,"r")
-    raw_words = f.readlines()
+    raw_word = f.readline()
+    while raw_word != '':
+        try:
+            raw_word = f.readline()
+            raw_words.append(raw_word)
+        except:
+            pass
     f.close()
     found_resume = False
     words = Queue()
@@ -38,7 +46,7 @@ def dirb(word_queue, extensions=None):
         attempt = word_queue.get()
         attempt_list = []
         if "." not in attempt:
-            attempt_list.append("/%s/" % attempt)
+            attempt_list.append("/%s" % attempt)
         else:
             attempt_list.append("/%s/" % attempt)
         if extensions:
@@ -50,7 +58,7 @@ def dirb(word_queue, extensions=None):
             u = urllib.parse.urlparse(rq_url)
             u = u.geturl()
             # print(u.geturl())
-            r = requests.get(u,proxies=proxies,cookies=cookies)
+            r = requests.get(u,proxies=proxies,cookies=cookies,allow_redirects =False)
             if r.status_code != 404:           
                 print("+ [%d] - %s"%(r.status_code,u))
 

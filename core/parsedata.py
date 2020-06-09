@@ -19,10 +19,10 @@ def parse_url(url):
         print("Invalid domain, try again..")
         sys.exit(1)
     return host
-def parse_wordlist(wordlist):
-    try:
-        wordlists = open(wordlist).read().splitlines()
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-    return wordlists
+# def parse_wordlist(wordlist):
+#     try:
+#         wordlists = open(wordlist).read().splitlines()
+#     except Exception as e:
+#         print(e)
+#         sys.exit(1)
+#     return wordlists

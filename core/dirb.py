@@ -46,7 +46,7 @@ def dirb(word_queue, extensions=None):
         attempt = word_queue.get()
         attempt_list = []
         if "." not in attempt:
-            attempt_list.append("/%s" % attempt)
+            attempt_list.append("/%s/" % attempt)
         else:
             attempt_list.append("/%s/" % attempt)
         if extensions:

@@ -68,28 +68,45 @@
 #         sys.exit(1)
 #     return wordlists
 
-
+from queue import Queue
 wordlist_path = '/usr/share/wordlists/dirb/big.txt'
 
 # wordlist = parse_wordlist(wordlist_path)
 
 # print(wordlist)
+resume = None
+raw_words = []
 
 def build_wordlist(wordlist_file):
+
     f = open(wordlist_file,"r")
-    a = []
-    raw_words = f.readline()
-    while raw_words != '':
+    raw_word = f.readline()
+    while raw_word != '':
         try:
-            raw_words = f.readline()
-            a.append(raw_words)
+            raw_word = f.readline()
+            raw_words.append(raw_word)
         except:
             pass
     f.close()
-    return a
+    found_resume = False
+    words = Queue()
+    for word in raw_words:
+        word = word.rstrip()
+        if resume is not None:
+            if found_resume:
+                words.put(word)
+            else:
+                if word == resume:
+                    found_resume = True
+        else:
+            words.put(word)
+    return words
+
 
 data = build_wordlist(wordlist_path)
-print(data)
+while not data.empty():
+    print(data.get())
+# print(data)
     # found_resume = False
     # words = Queue()
     # for word in raw_words:

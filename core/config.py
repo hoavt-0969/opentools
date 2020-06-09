@@ -37,6 +37,7 @@ def options():
     parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
     return parser.parse_args()
 
+
 args = options()
 url = args.url
 number_threads = args.threads

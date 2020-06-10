@@ -10,15 +10,6 @@ def parse_cookie(rawdata):
     for key, data in cookie.items():
         cookies[key] = data.value
     return cookies
-def banner():
-    print('''
- ____               ____ ____  ____  
-/ ___| _   _ _ __  / ___/ ___||  _ \ 
-\___ \| | | | '_ \| |   \___ \| |_) |
- ___) | |_| | | | | |___ ___) |  _ < 
-|____/ \__,_|_| |_|\____|____/|_| \_\ 
-
-''')
 
 def options():
     parser = argparse.ArgumentParser(prog="scan")
@@ -31,24 +22,28 @@ def options():
     dirb_parser.add_argument('-u','--url',required=True,type=str,default=None)
     dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
     dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
-    dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads")
+    dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads", required=False)
+
     xss_parser.add_argument('-u','--url',required=True,type=str)
-    
-    parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
+    xss_parser.add_argument('--cookies', required=False,type=str)
+    xss_parser.add_argument('--proxy',required=False,type=str,default="http://localhost:8080")
+
+    # parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
     return parser.parse_args()
 
 
 args = options()
-number_threads = args.threads
+
 # print(vars(args))
 # print(args.command)
 if args.command == "dirb":
     if args.url[-1] == "/":
         url = args.url[:-1]
     else:
-        url = url
+        url = args.url
     # print(url[-1])
     # print(url)
+    number_threads = args.threads
     cookies = parsedata.parse_cookie(args.cookies)
     wordlist = args.wordlist
     extensions = args.extensions.split(",")
@@ -58,7 +53,26 @@ if args.command == "dirb":
     # print(vars(cookies))
     # print(vars(wordlist))
 elif args.command == "xss":
-    pass
+    url = args.url
+    params_fuzz = [
+    'name','query','redirect', 'redir', 'url', 'link', 'goto', 'debug', '_debug', 'test', 'get', 'index', 'src', 'source', 'file',
+    'frame', 'config', 'new', 'old', 'var', 'rurl', 'return_to', '_return', 'returl', 'last', 'text', 'load', 'email',
+    'mail', 'user', 'username', 'password', 'pass', 'passwd', 'first_name', 'last_name', 'back', 'href', 'ref', 'data', 'input',
+    'out', 'net', 'host', 'address', 'code', 'auth', 'userid', 'auth_token', 'token', 'error', 'keyword', 'key', 'q', 'aid',
+    'bid', 'cid', 'did', 'eid', 'fid', 'gid', 'hid', 'iid', 'jid', 'kid', 'lid', 'mid', 'nid', 'oid', 'pid', 'qid', 'rid', 'sid',
+    'tid', 'uid', 'vid', 'wid', 'xid', 'yid', 'zid', 'cal', 'country', 'x', 'y', 'topic', 'title', 'head', 'higher', 'lower', 'width',
+    'height', 'add', 'result', 'log', 'demo', 'example', 'message']
+    payloads = "<script>alert(\"tested\");</script>"
+    number_threads = 100
+    cookies = parsedata.parse_cookie(args.cookies)
+    proxies = None
+    proxies = {
+        'http': args.proxy,
+        'https' : args.proxy,
+    }
+    print(proxies)
+    from core import scanxss
+    scanxss.main()
 elif args.command == "dns":
     pass
 
@@ -67,19 +81,11 @@ elif args.command == "dns":
 
 # print(vars(args))
 # print(extensions)
-params_fuzz = [
-    'name','query','redirect', 'redir', 'url', 'link', 'goto', 'debug', '_debug', 'test', 'get', 'index', 'src', 'source', 'file',
-    'frame', 'config', 'new', 'old', 'var', 'rurl', 'return_to', '_return', 'returl', 'last', 'text', 'load', 'email',
-    'mail', 'user', 'username', 'password', 'pass', 'passwd', 'first_name', 'last_name', 'back', 'href', 'ref', 'data', 'input',
-    'out', 'net', 'host', 'address', 'code', 'auth', 'userid', 'auth_token', 'token', 'error', 'keyword', 'key', 'q', 'aid',
-    'bid', 'cid', 'did', 'eid', 'fid', 'gid', 'hid', 'iid', 'jid', 'kid', 'lid', 'mid', 'nid', 'oid', 'pid', 'qid', 'rid', 'sid',
-    'tid', 'uid', 'vid', 'wid', 'xid', 'yid', 'zid', 'cal', 'country', 'x', 'y', 'topic', 'title', 'head', 'higher', 'lower', 'width',
-    'height', 'add', 'result', 'log', 'demo', 'example', 'message']
+
 
 
 # cookies = {"PHPSESSID":"9ej49jdjq07nur1tuj5akfh67r", "security":"low"}
 
-payloads = "<script>alert(\"tested\");</script>"
 
 
 

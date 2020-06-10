@@ -11,13 +11,14 @@ url = config.url
 params_fuzz = config.params_fuzz
 payloads = config.payloads
 number_threads = config.number_threads
+proxies = config.proxies
 def reflect_xss(url,params_fuzz):
     global par
     while not par.empty():
         param = par.get()
         # print(param)
         data = {param:payloads}
-        res = requests.get(url=url, params=data,cookies=config.cookies)
+        res = requests.get(url=url, params=data,cookies=config.cookies, proxies=proxies,verify=False)
         if payloads in res.content.decode():
             print(f"[+] XSS Detected on {url}")
             print(f"[*] Inputs details:")
@@ -41,9 +42,9 @@ def get_all_forms(url):
 
 def get_form_details(form):
     details = {}
-    action = form.attrs.get("action").lower()
-
-    method = form.attrs.get("method", "get").lower()
+    action = form.attrs.get("action")
+    # print(action)
+    method = form.attrs.get("method", "get")
 
     inputs = []
     all_form = form.find_all(["input", "textarea"])
@@ -78,9 +79,9 @@ def submit_form(form_details, url, value):
     # print(data)
     if form_details["method"] == "post":
         #print(requests.post(target_url, data=data, cookies=cookies).content.decode())
-        return requests.post(target_url, data=data, cookies=config.cookies)
+        return requests.post(target_url, data=data, cookies=config.cookies,proxies=proxies,verify=False)
     else:
-        return requests.get(target_url, params=data, cookies=config.cookies)
+        return requests.get(target_url, params=data, cookies=config.cookies, proxies=proxies,verify=False)
 
 
 def scan_xss(url):
@@ -107,4 +108,5 @@ def scan_xss(url):
 
 def main():
     scan_reflect(url,params_fuzz,number_threads)
+    scan_xss(url)
     par.join()

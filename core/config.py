@@ -17,23 +17,23 @@ def options():
 
     dirb_parser = subparsers.add_parser("dirb")
     xss_parser = subparsers.add_parser("xss")
-    dns_parser = subparsers.add_parser("dns")
+    sub_parser = subparsers.add_parser("sub")
 
     dirb_parser.add_argument('-u','--url',required=True,type=str,default=None)
     dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
     dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
     dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads", required=False)
+    dirb_parser.add_argument('--cookies', required=False,type=str)
 
     xss_parser.add_argument('-u','--url',required=True,type=str)
     xss_parser.add_argument('--cookies', required=False,type=str)
-    xss_parser.add_argument('--proxy',required=False,type=str,default="http://localhost:8080")
 
-    # parser.add_argument('--cookies',type=str, required=False, help="Set cookies")
+    sub_parser.add_argument('-d', '--domain', required=True, type=str)
+    sub_parser.add_argument('-t', '--threads', required=False, type=int, default=10)
     return parser.parse_args()
 
 
 args = options()
-
 # print(vars(args))
 # print(args.command)
 if args.command == "dirb":
@@ -65,15 +65,19 @@ elif args.command == "xss":
     payloads = "<script>alert(\"tested\");</script>"
     number_threads = 100
     cookies = parsedata.parse_cookie(args.cookies)
-    proxies = None
-    proxies = {
-        'http': args.proxy,
-        'https' : args.proxy,
-    }
-    print(proxies)
+    # proxies = None
+    # proxies = {
+    #     'http': args.proxy,
+    # }
+    # print(proxies)
     from core import scanxss
     scanxss.main()
-elif args.command == "dns":
+elif args.command == "sub":
+    domain = args.domain
+    threads = args.threads
+    # print(domain,threads)
+    from core import sub
+    dns.main()
     pass
 
 # url = args.url

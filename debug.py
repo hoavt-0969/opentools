@@ -120,4 +120,16 @@
     #     else:
     #         words.put(word)
     # return words
-
+import requests
+import threading
+from queue import Queue
+class Dirb(object):
+    def __init__(self, url, extensions, wordlist, cookies, headers,number_threads,proxies):
+        self.url = url
+        self.extensions = extensions
+        self.wordlist = wordlist
+        self.cookies = cookies
+        self.headers = headers
+        self.number_threads = number_threads
+        self.proxies = proxies
+        self.resume = None

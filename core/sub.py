@@ -2,22 +2,24 @@ import requests
 import urllib3
 import sys
 import threading
-
+from core import config
 from queue import Queue
 
 d = Queue()
 
-# def parse_url(url):
-#     try:
-#         host = urllib3.util.url.parse_url(url).host
-#     except Exception as e:
-#         print("Invalid domain, try again..")
-#         sys.exit(1)
-#     return host
+def parse_url(url):
+    try:
+        host = urllib3.util.url.parse_url(url).host
+    except Exception as e:
+        print("Invalid domain, try again..")
+        sys.exit(1)
+    return host
 
 def parse_wordlist(wordlist):
     try:
-        wordlists = open(wordlist).read().splitlines()
+        # print(wordlist)
+        wordlists = open(wordlist,'r').read().splitlines()
+        # print(wordlists)
     except Exception as e:
         print(e)
         sys.exit(1)
@@ -41,9 +43,9 @@ def scan_subdomain(target):
             res = requests.get(url)
         except requests.ConnectionError:
             pass
+        #     pass
         else:
-            if res.status_code == 200:
-                print("[+] ", url)
+            print("[+] - %s - %d"%(url,res.status_code))
         d.task_done()
 
 def mutil_scan_subdomains(target,number_threads,subdomains):
@@ -54,13 +56,9 @@ def mutil_scan_subdomains(target,number_threads,subdomains):
         t.daemon = True
         t.start()
 def main():
-    target = input("Target: ")
-    wordlist = input("Wordlist: ")
-    number_threads = int(input("Number threads: "))
+    target = parse_url(config.domain)
+    wordlist = '/home/sun/opentools/test1.txt'
+    number_threads = config.threads
     print("=====================")
     mutil_scan_subdomains(target=target, number_threads=number_threads,subdomains=parse_wordlist(wordlist))
-if __name__ == "__main__":
-    banner()
-    print("====================")
-    main()
     d.join()

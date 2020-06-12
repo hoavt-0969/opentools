@@ -66,8 +66,9 @@ def dirb(word_queue, extensions=None):
             try:
                 r = requests.get(u,proxies=proxies,cookies=cookies,allow_redirects =False)
                 print("+ [%d] - %s"%(r.status_code,u))
-            except Exception as e:
-                print(e)
+            except:
+                print("Error request")
+                # print(e)
             
             # if r.status_code != 404:           
             #     print("+ [%d] - %s"%(r.status_code,u))

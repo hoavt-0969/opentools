@@ -70,8 +70,8 @@ elif args.command == "xss":
     #     'http': args.proxy,
     # }
     # print(proxies)
-    from core import scanxss
-    scanxss.main()
+    from core import xss
+    xss.main()
 elif args.command == "sub":
     domain = args.domain
     threads = args.threads

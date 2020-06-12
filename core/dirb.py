@@ -4,6 +4,7 @@ import threading
 import urllib.parse
 from queue import Queue
 from core import config
+import sys
 # url = "http://testphp.vulnweb.com"
 resume = None
 proxies = {}
@@ -16,7 +17,11 @@ wordlist_file = config.wordlist
 extensions = config.extensions
 raw_words = []
 def build_wordlist(wordlist_file):
-
+    # try:
+    #     raw_words = open(wordlist_file,'r',errors="replace",encoding='utf-8').readlines()
+    # except Exception as e:
+    #     print(e)
+    #     sys.exit(1)
     f = open(wordlist_file,"r")
     raw_word = f.readline()
     while raw_word != '':
@@ -58,9 +63,14 @@ def dirb(word_queue, extensions=None):
             u = urllib.parse.urlparse(rq_url)
             u = u.geturl()
             # print(u.geturl())
-            r = requests.get(u,proxies=proxies,cookies=cookies,allow_redirects =False)
-            if r.status_code != 404:           
+            try:
+                r = requests.get(u,proxies=proxies,cookies=cookies,allow_redirects =False)
                 print("+ [%d] - %s"%(r.status_code,u))
+            except Exception as e:
+                print(e)
+            
+            # if r.status_code != 404:           
+            #     print("+ [%d] - %s"%(r.status_code,u))
 
 word_queue = build_wordlist(wordlist_file)
 

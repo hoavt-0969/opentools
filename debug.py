@@ -122,19 +122,38 @@
 #     # return words
 
 
-
-def load_wordlist(path):
-    result = ''
-    with open(path,'r', errors="replace",encoding='utf-8') as fd:
-        return fd.read().splitlines()
-
-
-path = '/usr/share/wordlists/dirb/big.txt'
+# def load_wordlist(path):
+#     result = ''
+#     with open(path,'r', errors="replace",encoding='utf-8') as fd:
+#         return fd.read().splitlines()
 
 
-raw = load_wordlist(path)
-# print(len(raws))
-# print(raw.splitlines())
-print(raw)
-# for raw in raws:
-#     print(raw)
+# path = '/usr/share/wordlists/dirb/big.txt'
+
+
+# raw = load_wordlist(path)
+# # print(len(raws))
+# # print(raw.splitlines())
+# print(raw)
+# # for raw in raws:
+# #     print(raw)
+import urllib3
+import sys
+
+def parse_url(domain):
+    try:
+        parsed = urllib3.util.url.parse_url(domain)
+        # parsed = urlparse('http://abc.hostname.com/somethings/anything/')
+        domain = parsed.netloc.split(".")[1:]
+        print(domain)
+        host = ".".join(domain)
+    except Exception as e:
+        print("Invalid domain, try again..")
+        sys.exit(1)
+    return host
+
+domain = "https://www.google.com/"
+
+host = parse_url(domain)
+print(host)
+# print(host[2])

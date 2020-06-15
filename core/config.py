@@ -77,7 +77,7 @@ elif args.command == "sub":
     threads = args.threads
     # print(domain,threads)
     from core import sub
-    dns.main()
+    sub.main()
     pass
 
 # url = args.url

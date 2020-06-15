@@ -1,4 +1,5 @@
 from core import dirb
+from core import sub
 
 def parse_args():
     import argparse
@@ -19,6 +20,7 @@ def parse_args():
     xss_parser.add_argument('--cookies', required=False,type=str)
 
     sub_parser.add_argument('-d', '--domain', required=True, type=str)
+    sub_parser.add_argument('-w', '--wordlist', required=True, type=str)
     sub_parser.add_argument('-t', '--threads', required=False, type=int, default=10)
     return parser.parse_args()
 def banner():
@@ -35,7 +37,7 @@ def main():
     banner()
     args = parse_args()
     args = parse_args()
-    print(vars(args))
+    # print(vars(args))
     if args.command == "dirb":
         if args.url[-1] == "/":
             url = args.url[:-1]
@@ -48,6 +50,13 @@ def main():
         wordlist = args.wordlist
         extensions = args.extensions.split(",")
         scanner = dirb.Dirb(url=url, extensions=extensions, wordlist=wordlist, threads=threads,cookies=cookies)
+        scanner.run()
+    elif args.command == "sub":
+        domain = args.domain
+        threads = args.threads
+        wordlist = args.wordlist
+        # print(domain,threads)
+        scanner = sub.Sub(domain=domain,threads=threads, wordlist=wordlist)
         scanner.run()
     # print(vars(args))
 if __name__ == "__main__":

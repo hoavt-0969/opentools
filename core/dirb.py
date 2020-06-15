@@ -72,7 +72,7 @@ class Dirb(object):
                     self.cookies = self.parse_cookie()
                     res = requests.get(url,cookies=self.cookies, allow_redirects=False, proxies=self.proxies)
                     if res.status_code !=404:
-                        print("+ [%d] - %s"%(res.status_code,url))
+                        print("[+] - [%d] - %s"%(res.status_code,url))
                 except Exception as e:
                     print("Error requests")
                 # print(vars(res))

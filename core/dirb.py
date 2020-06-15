@@ -52,6 +52,7 @@ class Dirb(object):
 
     def Scanner(self,word_queue):
         # print('hello')
+        # print()
         while not word_queue.empty():
             attempt = word_queue.get()
             attempt_list = []
@@ -66,6 +67,7 @@ class Dirb(object):
                 url = "%s%s" %(self.url,brute)
                 # print(brute)
                 # print(url)
+            
                 try:
                     self.cookies = self.parse_cookie()
                     res = requests.get(url,cookies=self.cookies, allow_redirects=False, proxies=self.proxies)
@@ -79,57 +81,12 @@ class Dirb(object):
         word_queue.task_done()
 
     def run(self):
+        self.words = self.build_wordlist()
         # print(vars(self.build_wordlist()))
         for thread in range(self.threads):
             # t = threading.Thread(target=self.Scanner,args=(self.build_wordlist()))
-            t = threading.Thread(target=self.Scanner,args=(self.build_wordlist(),))
+            t = threading.Thread(target=self.Scanner,args=(self.words,))
+            # print(t.getName)
             # t.daemon = True
             t.start()
             # t.join()
-
-# def parse_args():
-#     import argparse
-#     parser = argparse.ArgumentParser(prog="scan")
-#     subparsers = parser.add_subparsers(dest='command')
-
-#     dirb_parser = subparsers.add_parser("dirb")
-#     xss_parser = subparsers.add_parser("xss")
-#     sub_parser = subparsers.add_parser("sub")
-
-#     dirb_parser.add_argument('-u','--url',required=True,type=str,default=None)
-#     dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
-#     dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
-#     dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads", required=False)
-#     dirb_parser.add_argument('--cookies', required=False,type=str)
-
-#     xss_parser.add_argument('-u','--url',required=True,type=str)
-#     xss_parser.add_argument('--cookies', required=False,type=str)
-
-#     sub_parser.add_argument('-d', '--domain', required=True, type=str)
-#     sub_parser.add_argument('-t', '--threads', required=False, type=int, default=10)
-#     return parser.parse_args()
-
-
-
-# if __name__ == "__main__":
-#     # url = "http://testphp.vulnweb.com"
-#     # threads = 100
-#     # extensions = ['.php','.html','.txt']
-#     # wordlist = "/usr/share/wordlists/dirb/big.txt"
-#     # scanner = Dirb(url=url,extensions=extensions,wordlist=wordlist,threads=threads)
-#     # scanner.run()
-#     args = parse_args()
-#     print(vars(args))
-#     if args.command == "dirb":
-#         if args.url[-1] == "/":
-#             url = args.url[:-1]
-#         else:
-#             url = args.url
-#     # print(url[-1])
-#     # print(url)
-#         threads = args.threads
-#         cookies = parse_cookie(args.cookies)
-#         wordlist = args.wordlist
-#         extensions = args.extensions.split(",")
-#         scanner = Dirb(url=url, extensions=extensions, wordlist=wordlist, threads=threads,cookies=cookies)
-#         scanner.run()

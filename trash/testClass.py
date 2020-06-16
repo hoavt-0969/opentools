@@ -3,8 +3,10 @@ import threading
 from queue import Queue
 import sys
 import urllib
+
+import status_data
 class Dirb(object):
-    def __init__(self, url, extensions, wordlist, cookies=None, headers=None,threads=10,proxies=None):
+    def __init__(self, url, extensions, wordlist, cookies=None, headers=None,threads=10,proxies=None,status_codes = None):
         self.url = url
         self.extensions = extensions
         self.wordlist = wordlist
@@ -12,10 +14,11 @@ class Dirb(object):
         self.headers = headers
         self.threads = threads
         self.proxies = proxies
+        self.status_codes = [int(status_code) for status_code in status_codes]
         self.resume = None
         self.words = Queue()
         self.q = self.build_wordlist()
-    
+
     def parse_cookie(self):
         if self.cookies == None:
             return self.cookies
@@ -72,7 +75,11 @@ class Dirb(object):
                 try:
                     self.cookies = self.parse_cookie()
                     res = requests.get(url,cookies=self.cookies, allow_redirects=False, proxies=self.proxies)
-                    if res.status_code !=404:
+                    # if res.status_code !=404:
+                    # print(vars(res))
+                    # print(self.status_codes)
+                    # print(res.status_code)
+                    if res.status_code in self.status_codes:
                         print("[+] - [%d] - %s"%(res.status_code,url))
                 except Exception as e:
                     print("Error requests")
@@ -91,3 +98,63 @@ class Dirb(object):
             # t.daemon = True
             t.start()
             # t.join()
+
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(prog="scan")
+    subparsers = parser.add_subparsers(dest='command')
+
+    dirb_parser = subparsers.add_parser("dirb")
+    xss_parser = subparsers.add_parser("xss")
+    sub_parser = subparsers.add_parser("sub")
+
+    dirb_parser.add_argument('-u','--url',required=True,type=str,default=None)
+    dirb_parser.add_argument('-w','--wordlist',type=str,required=True,default="/home/sun/opentools/subdomains.txt")
+    dirb_parser.add_argument("-e","--extensions",type=str,required=True,default=".php,.html,.txt")
+    dirb_parser.add_argument("-t", "--threads",default=10,type=int,help="Set number threads", required=False)
+    dirb_parser.add_argument('--cookies', required=False,type=str)
+    # dirb_parser.add_argument('-x', '--exclude-status', required=False,type=str,default=None)
+    dirb_parser.add_argument('-s', '--status-codes', required=False,type=str,default="200,204,301,302,307,401,403")
+
+    xss_parser.add_argument('-u','--url',required=True,type=str)
+    xss_parser.add_argument('--cookies', required=False,type=str)
+
+    sub_parser.add_argument('-d', '--domain', required=True, type=str)
+    sub_parser.add_argument('-t', '--threads', required=False, type=int, default=10)
+    return parser.parse_args()
+
+def parse_cookie(rawdata):
+    if rawdata == None:
+        return rawdata
+    from http.cookies import SimpleCookie
+    cookie = SimpleCookie()
+    cookie.load(rawdata)
+    cookies = {}
+    for key, data in cookie.items():
+        cookies[key] = data.value
+    return cookies
+
+if __name__ == "__main__":
+    # url = "http://testphp.vulnweb.com"
+    # threads = 100
+    # extensions = ['.php','.html','.txt']
+    # wordlist = "/usr/share/wordlists/dirb/big.txt"
+    # scanner = Dirb(url=url,extensions=extensions,wordlist=wordlist,threads=threads)
+    # scanner.run()
+    args = parse_args()
+    print(vars(args))
+    if args.command == "dirb":
+        if args.url[-1] == "/":
+            url = args.url[:-1]
+        else:
+            url = args.url
+    # print(url[-1])
+    # print(url)
+        threads = args.threads
+        cookies = parse_cookie(args.cookies)
+        wordlist = args.wordlist
+        extensions = args.extensions.split(",")
+        status_codes = args.status_codes.split(",")
+        print(status_codes)
+        scanner = Dirb(url=url, extensions=extensions, wordlist=wordlist, threads=threads,cookies=cookies,status_codes=status_codes)
+        scanner.run()
